@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("calculatriceCsharp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5a4231ae6d76d1c1481c4c02a2bdf68d2512b628")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dfee2246524bbdf0e75d098367d774aa439aa92d")]
 [assembly: System.Reflection.AssemblyProductAttribute("calculatriceCsharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("calculatriceCsharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

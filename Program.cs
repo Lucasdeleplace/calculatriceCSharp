@@ -1,13 +1,14 @@
 ﻿using Spectre.Console;
 
 List<double> nombres = new List<double>();
+double result = 0;
 
 void entrerNombres()
 {
-    nombres.Clear(); // Vider la liste avant d'ajouter de nouveaux nombres
+    AnsiConsole.MarkupLine($"[green]premiere valeur :{result}[/]");
     while (true)
     {
-        string input = AnsiConsole.Ask<string>("Entrez un nombre (ou appuyez sur [green]Entrée[/] pour terminer, [red]d[/] pour supprimer le dernier) : ");
+        string input = AnsiConsole.Ask<string>("Entrez un nombre (ou appuyez sur [green]e[/] pour terminer, [red]d[/] pour supprimer le dernier) : ");
         if (input == "e") break;
         if (input == "d")
         {
@@ -37,8 +38,10 @@ int Menu()
 {
     int choix = AnsiConsole.Prompt(
         new SelectionPrompt<int>()
-            .Title("Choisissez une option :")
-            .AddChoices(1, 2, 3, 4, 5, 6, 7, 8)
+            .Title("[green]Resultat actuel : " +
+            $"{result}[/]\n\n" +
+            "Choisissez une option :")
+            .AddChoices(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0)
             .UseConverter(choice =>
             {
                 return choice switch
@@ -49,8 +52,11 @@ int Menu()
                     4 => "4. Division",
                     5 => "5. Puissances",
                     6 => "6. Racines",
-                    7 => "7. Quitter",
-                    8 => "8. Commandes",
+                    7 => "7. Sinus",
+                    8 => "8. Cosinus",
+                    9 => "9. Tangent",
+                    10 => "10. clear",
+                    0 => "0. Quitter",
                     _ => "Choix invalide"
                 };
             }));
@@ -58,38 +64,60 @@ int Menu()
     return choix;
 }
 
+void EffectuerOperation(Func<double, double, double> operation)
+{
+    if (nombres.Count < 2)
+    {
+        AnsiConsole.MarkupLine("[red]Veuillez entrer au moins deux nombres pour cette opération.[/]");
+        return;
+    }
+
+    result = nombres.Aggregate(operation);
+    nombres.Clear();
+    nombres.Add(result);
+    AnsiConsole.MarkupLine($"Le résultat est : [green]{result}[/]");
+}
+
+
 while (true) // Tant que l'utilisateur ne quitte pas, on continue
 {
     int choix = Menu();
-    double result;
+
 
     switch (choix)
     {
-        case 1:
+        case 1: // Addition
             entrerNombres();
-            result = nombres.Sum();
-            AnsiConsole.MarkupLine("Le résultat de l'addition est : [green]{0}[/]", result);
+            EffectuerOperation((a, b) => a + b);
             break;
-        case 2:
+
+        case 2: // Soustraction
             entrerNombres();
-            result = nombres.Aggregate((a, b) => a - b);
-            AnsiConsole.MarkupLine("Le résultat de la soustraction est : [green]{0}[/]", result);
+            EffectuerOperation((a, b) => a - b);
             break;
-        case 3:
+
+        case 3: // Multiplication
             entrerNombres();
-            result = nombres.Aggregate((a, b) => a * b);
-            AnsiConsole.MarkupLine("Le résultat de la multiplication est : [green]{0}[/]", result);
+            EffectuerOperation((a, b) => a * b);
             break;
-        case 4:
+
+        case 4: // Division
             entrerNombres();
-            result = nombres.Aggregate((a, b) => a / b);
-            AnsiConsole.MarkupLine("Le résultat de la division est : [green]{0}[/]", result);
+            if (nombres.Contains(0))
+            {
+                AnsiConsole.MarkupLine("[red]Division par zéro interdite.[/]");
+                break;
+            }
+            EffectuerOperation((a, b) => a / b);
             break;
+
         case 5:
             entrerNombres();
             if (nombres.Count >= 2)
             {
                 result = Math.Pow(nombres[0], nombres[1]);
+                nombres.Clear();
+                nombres.Add(result);
                 AnsiConsole.MarkupLine("Le résultat de la puissance est : [green]{0}[/]", result);
             }
             else
@@ -98,27 +126,48 @@ while (true) // Tant que l'utilisateur ne quitte pas, on continue
             }
             break;
         case 6:
-            double num = AnsiConsole.Ask<double>("Entrez un nombre : ");
-            result = Math.Sqrt(num);
+            double numRacine = AnsiConsole.Ask<double>("Entrez un nombre : ");
+            result = Math.Sqrt(numRacine);
+            nombres.Clear();
+            nombres.Add(result);
             AnsiConsole.MarkupLine("Le résultat de la racine est : [green]{0}[/]", result);
             break;
         case 7:
-            AnsiConsole.Clear();
-            Environment.Exit(0);
+            double numSinus = AnsiConsole.Ask<double>("Entrez un nombre : ");
+            result = Math.Sin(numSinus);
+            nombres.Clear();
+            nombres.Add(result);
+            AnsiConsole.MarkupLine("Le résultat du sinus est : [green]{0}[/]", result);
             break;
         case 8:
+            double numConsinus = AnsiConsole.Ask<double>("Entrez un nombre : ");
+            result = Math.Cos(numConsinus);
+            nombres.Clear();
+            nombres.Add(result);
+            AnsiConsole.MarkupLine("Le résultat du cosinus est : [green]{0}[/]", result);
+            break;
+        case 9:
+            double numTangente = AnsiConsole.Ask<double>("Entrez un nombre : ");
+            result = Math.Tan(numTangente);
+            nombres.Clear();
+            nombres.Add(result);
+            AnsiConsole.MarkupLine("Le résultat de la tagente est : [green]{0}[/]", result);
+            break;
+        case 10:
+            AnsiConsole.MarkupLine("[green]Le résultat à etais supprimer avec success [/]\n");
+            nombres.Clear();
+            result = 0;
+            break;
+        case 0:
             AnsiConsole.Clear();
-            AnsiConsole.MarkupLine("[yellow]Commandes :[/]");
-            AnsiConsole.MarkupLine("-----------------------");
-            AnsiConsole.MarkupLine("Lors d'une opération, en cas d'erreur, utilisez la commande 'd' pour supprimer le dernier nombre entré");
-            AnsiConsole.MarkupLine("Entrée : valider un nombre entré");
+            Environment.Exit(0);
             break;
         default:
             AnsiConsole.MarkupLine("[red]Choix invalide[/]");
             break;
     }
 
-    var retourMenu = AnsiConsole.Prompt(
+    string retourMenu = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
             .Title("Voulez-vous retourner au menu ?")
             .AddChoices("Oui", "Non"));
